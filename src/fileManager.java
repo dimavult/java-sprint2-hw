@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,7 +15,7 @@ import java.util.HashMap;
 public class fileManager {
     static HashMap<Integer, ArrayList<ParseMonthFileData>> monthStorage;
     static HashMap<Integer, ArrayList<ParseYearFileData>> yearStorage;
-    private final String PATH = "C:\\Users\\beshenij\\Desktop\\dev\\java-sprint2-hw\\resources\\";
+    private final String PATH = "..\\java-sprint2-hw\\resources\\";
 
     public fileManager(){
         monthStorage = new HashMap<>();
@@ -23,6 +24,7 @@ public class fileManager {
 
     private static String readFileContentsOrNull(String path) {
         try {
+
             return Files.readString(Path.of(path));
         } catch (IOException e) {
             System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
