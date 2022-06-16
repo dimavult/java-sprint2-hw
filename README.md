@@ -1,2 +1,2 @@
-# java-sprint2-hw-main
+# java-sprint2-hw
 Second sprint homework
