@@ -6,11 +6,8 @@ public class YearlyReport {
     private static final String PATH = "resources\\y.2021.csv";
     private HashMap<Integer, ArrayList<ParseYearFileData>> yearStorage = new HashMap<>();
 
-    public HashMap<Integer, ArrayList<YearlyReport.ParseYearFileData>> getYearStorage() {
-        return yearStorage;
-    }
-
     FileManager fileManager = new FileManager();
+
     public static class ParseYearFileData {
         int month;
         boolean isExpense;
@@ -35,7 +32,46 @@ public class YearlyReport {
                 storageList.add(new ParseYearFileData(lineContents));
                 yearStorage.put(2021, storageList);
             }
-            System.out.println(yearStorage.keySet());
         }
+    }
+
+    public ArrayList<Integer> findYearlyIncome() {
+        ArrayList<Integer> incomeList = new ArrayList<>();
+        for (int i = 0; i < yearStorage.get(2021).size(); i++) {
+            if (!yearStorage.get(2021).get(i).isExpense) {
+                incomeList.add(yearStorage.get(2021).get(i).amount);
+            }
+        }
+        return incomeList;
+    }
+
+    public ArrayList<Integer> findYearlyConsumption() {
+        ArrayList<Integer> consumptionList = new ArrayList<>();
+        for (int i = 0; i < yearStorage.get(2021).size(); i++) {
+            if (yearStorage.get(2021).get(i).isExpense) {
+                consumptionList.add(yearStorage.get(2021).get(i).amount);
+            }
+        }
+        return consumptionList;
+    }
+
+    public ArrayList<Integer> findEachMonthProfit(){
+        ArrayList<Integer> eachMonthProfit = new ArrayList<>();
+        for(int i = 0; i < findYearlyIncome().size(); i++){
+            eachMonthProfit.add(findYearlyIncome().get(i) - findYearlyConsumption().get(i));
+        }
+        return eachMonthProfit;
+    }
+
+    public void findAverageIncomeAndConsumption(int year) {
+        int avgIncome = 0;
+        int avgConsumption = 0;
+        for (int i = 0; i < yearStorage.get(year).size(); i++) {
+            if (yearStorage.get(year).get(i).isExpense) {
+                avgConsumption += yearStorage.get(year).get(i).amount / (yearStorage.get(year).size() / 2);
+            } else avgIncome += yearStorage.get(year).get(i).amount / (yearStorage.get(year).size() / 2);
+        }
+        System.out.println("Средний расход за все месяцы в году: " + avgConsumption);
+        System.out.println("Средний доход за все месяцы в году: " + avgIncome);
     }
 }
