@@ -40,11 +40,11 @@ public class ReportManager {
         }
     }
 
-    public HashMap<Integer, ArrayList<ParseYearFileData>> getYearStorage(){
+    public HashMap<Integer, ArrayList<YearlyReport.ParseYearFileData>> getYearStorage(){
         return yearlyReport.getYearStorage();
     }
 
-    public HashMap<Integer, ArrayList<ParseMonthFileData>> getMonthStorage(){
+    public HashMap<Integer, ArrayList<MonthlyReport.ParseMonthFileData>> getMonthStorage(){
         return monthlyReport.getMonthStorage();
     }
 

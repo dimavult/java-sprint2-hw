@@ -6,11 +6,22 @@ public class YearlyReport {
     private static final String PATH = "resources\\y.2021.csv";
     private HashMap<Integer, ArrayList<ParseYearFileData>> yearStorage = new HashMap<>();
 
-    public HashMap<Integer, ArrayList<ParseYearFileData>> getYearStorage() {
+    public HashMap<Integer, ArrayList<YearlyReport.ParseYearFileData>> getYearStorage() {
         return yearStorage;
     }
 
     FileManager fileManager = new FileManager();
+    public static class ParseYearFileData {
+        int month;
+        boolean isExpense;
+        int amount;
+
+        public ParseYearFileData(String[] lineContents) {
+            this.month = Integer.parseInt(lineContents[0]);
+            this.isExpense = Boolean.parseBoolean(lineContents[2]);
+            this.amount = Integer.parseInt(lineContents[1]);
+        }
+    }
 
     public void saveYearlyReport() {
         ArrayList<ParseYearFileData> storageList = new ArrayList<>();

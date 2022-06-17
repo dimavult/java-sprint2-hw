@@ -8,8 +8,22 @@ public class MonthlyReport {
 
     FileManager fileManager = new FileManager();
 
-    public HashMap<Integer, ArrayList<ParseMonthFileData>> getMonthStorage() {
+    public HashMap<Integer, ArrayList<MonthlyReport.ParseMonthFileData>> getMonthStorage() {
         return monthStorage;
+    }
+
+    public static class ParseMonthFileData {
+        String name;
+        boolean isExpense;
+        int quantity;
+        int sumOfOne;
+
+        public ParseMonthFileData(String[] lines) {
+            this.name = lines[0];
+            this.isExpense = Boolean.parseBoolean(lines[1]);
+            this.quantity = Integer.parseInt(lines[2]);
+            this.sumOfOne = Integer.parseInt(lines[3]);
+        }
     }
 
     public void saveMonthlyReport(){

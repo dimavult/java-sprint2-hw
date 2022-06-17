@@ -14,8 +14,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ReportManager reportManager = new ReportManager();
-        MonthlyReport montlyReport = new MonthlyReport();
-        YearlyReport yearlyReport = new YearlyReport();
 
         while (true) {
             printMenu();
