@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
-public class main {
-    private static void printMenu () {
+public class Main {
+    private static void printMenu() {
         System.out.println("Что вы хотите сделать?.");
         System.out.println("1 - Считать все месячные отчёты.");
         System.out.println("2 - Считать годовой отчёт.");
@@ -11,13 +11,11 @@ public class main {
         System.out.println("0 - Выйти из приложения.");
     }
 
-    public static void main(String[] args) { /* я сидел над этой программой 37 часов за 3 дня.многое можно
-                                                декомпозировать и сделать лучше, но попытки это сделать
-                                                ломают всю прогу, так что я сдался.
-                                                не заставляйте переписывать всю прогу, пожалуйста :( */
-    Scanner scanner = new Scanner(System.in);
-    ReportManager reportManager = new ReportManager();
-    fileManager fileManager = new fileManager();
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ReportManager reportManager = new ReportManager();
+        MonthlyReport montlyReport = new MonthlyReport();
+        YearlyReport yearlyReport = new YearlyReport();
 
         while (true) {
             printMenu();
@@ -25,10 +23,10 @@ public class main {
             int input = scanner.nextInt();
             switch (input) {
                 case (1):
-                    fileManager.saveMothsReportsToHashMap();
+                    reportManager.monthlyReport.saveMonthlyReport();
                     break;
                 case (2):
-                    fileManager.saveYearReportToHashMap();
+                    reportManager.yearlyReport.saveYearlyReport();
                     break;
                 case (3):
                     reportManager.showCompareResults();

@@ -1,6 +1,5 @@
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 
 public class ReportManager {
     final String[] MONTHS = new String[]{"Январь",
@@ -15,6 +14,9 @@ public class ReportManager {
             "Октябрь",
             "Ноябрь",
             "Декабрь"};
+
+    MonthlyReport monthlyReport = new MonthlyReport();
+    YearlyReport yearlyReport = new YearlyReport();
 
     public void showCompareResults() { /* В зависимости от вернувшегося из метода compareYearAndMonthStats() значения,
                                           выводит в консоль разный результат.  */
@@ -38,21 +40,29 @@ public class ReportManager {
         }
     }
 
+    public HashMap<Integer, ArrayList<ParseYearFileData>> getYearStorage(){
+        return yearlyReport.getYearStorage();
+    }
+
+    public HashMap<Integer, ArrayList<ParseMonthFileData>> getMonthStorage(){
+        return monthlyReport.getMonthStorage();
+    }
+
     public void calculateMonthsLargestExpense(int monthNum) { // Методов считает самую большую трату за каждый месяц
                                                             // Вероятно, этот метод можно декомпозировать(не понял, как)
         int sum = 0;
         int maxSum = 0;
-        String goodName = "";
-        for (int i = 0; i < fileManager.monthStorage.get(monthNum).size(); i++) {
-            if (fileManager.monthStorage.get(monthNum).get(i).isExpense) {
-                sum = fileManager.monthStorage.get(monthNum).get(i).quantity * fileManager.monthStorage.get(monthNum).get(i).sumOfOne;
+        String name = "";
+        for (int i = 0; i < getMonthStorage().get(monthNum).size();i++){
+            if (!getMonthStorage().get(monthNum).get(i).isExpense){
+                sum += sumCalculator(monthNum, i);
             }
-            if (sum > maxSum) {
+            if (sum > maxSum){
                 maxSum = sum;
-                goodName = fileManager.monthStorage.get(monthNum).get(i).name;
+                name = getMonthStorage().get(monthNum).get(i).name;
             }
         }
-        System.out.println("Cамая большая трата:\n" + goodName + " - " + maxSum);
+        System.out.println("Cамая большая трата:\n" + name + " - " + maxSum);
     }
 
     public void findMonthsMostProfitableProduct(int monthNum) { // Метод считает самый прибыльный товар за каждый месяц
@@ -60,13 +70,13 @@ public class ReportManager {
         int sum = 0;
         int maxSum = 0;
         String goodName = "";
-        for (int i = 0; i < fileManager.monthStorage.get(monthNum).size(); i++) {
-            if (!fileManager.monthStorage.get(monthNum).get(i).isExpense) {
+        for (int i = 0; i < getMonthStorage().get(monthNum).size(); i++) {
+            if (!getMonthStorage().get(monthNum).get(i).isExpense) {
                 sum = sumCalculator(monthNum, i);
             }
             if (sum > maxSum) {
                 maxSum = sum;
-                goodName = fileManager.monthStorage.get(monthNum).get(i).name;
+                goodName = getMonthStorage().get(monthNum).get(i).name;
             }
         }
         System.out.println("\nСамый прибыльный товар:\n" + goodName + " - " + maxSum);
@@ -76,11 +86,11 @@ public class ReportManager {
                                                 // Вероятно, этот метод можно декомпозировать(не понял, как)
         int avgConsumption = 0;
         int avgIncome = 0;
-        for (int i = 0; i < fileManager.yearStorage.get(2021).size(); i++) {
-            if (fileManager.yearStorage.get(2021).get(i).isExpense) {
-                avgConsumption += fileManager.yearStorage.get(2021).get(i).amount / (fileManager.yearStorage.get(2021).size() / 2);
+        for (int i = 0; i < getYearStorage().get(2021).size(); i++) {
+            if (getYearStorage().get(2021).get(i).isExpense) {
+                avgConsumption += getYearStorage().get(2021).get(i).amount / (getYearStorage().get(2021).size() / 2);
             } else
-                avgIncome += fileManager.yearStorage.get(2021).get(i).amount / (fileManager.yearStorage.get(2021).size() / 2);
+                avgIncome +=getYearStorage().get(2021).get(i).amount / (getYearStorage().get(2021).size() / 2);
         }
         System.out.println("Средние траты в месяц: " + avgConsumption + "\nСредний доход в месяц: " + avgIncome);
     }
@@ -88,12 +98,12 @@ public class ReportManager {
     public void showProfitEachMonth() { // Методот считает прибыль за каждый месяц
                                         // Вероятно, этот метод можно декомпозировать(не понял, как)
         int month = -1;
-        for (int i = 1; i < fileManager.yearStorage.get(2021).size(); i += 2) {
+        for (int i = 1; i < getYearStorage().get(2021).size(); i += 2) {
             int profit = 0;
-            if (fileManager.yearStorage.get(2021).get(i).isExpense) {
-                profit = fileManager.yearStorage.get(2021).get(i - 1).amount - fileManager.yearStorage.get(2021).get(i).amount;
+            if (getYearStorage().get(2021).get(i).isExpense) {
+                profit = getYearStorage().get(2021).get(i - 1).amount - getYearStorage().get(2021).get(i).amount;
             } else {
-                profit = fileManager.yearStorage.get(2021).get(i).amount - fileManager.yearStorage.get(2021).get(i - 1).amount;
+                profit = getYearStorage().get(2021).get(i).amount - getYearStorage().get(2021).get(i - 1).amount;
             }
             System.out.println("Прибыль за " + MONTHS[month += 1] + ": " + profit + " рублей.");
         }
@@ -101,22 +111,22 @@ public class ReportManager {
 
 
     public int sumCalculator(int month, int objectNumber) {
-        return fileManager.monthStorage.get(month).get(objectNumber).quantity * fileManager.monthStorage.get(month).get(objectNumber).sumOfOne;
+        return getMonthStorage().get(month).get(objectNumber).quantity * getMonthStorage().get(month).get(objectNumber).sumOfOne;
     }
 
     public ArrayList<Integer> getYearStats() { /* Метод возвращает список сумм расходов и доходов по каждому месяцу
                                                   для годовых отчетов. Другой способ сравнения не нашел*/
         ArrayList<Integer> yearList = new ArrayList<>();
-        for (int i = 0; i < fileManager.yearStorage.get(2021).size(); i+=2) { /* Шаг в два для данного цикла я использую
+        for (int i = 0; i < getYearStorage().get(2021).size(); i+=2) { /* Шаг в два для данного цикла я использую
                                                                                 для проверки: если первое значение - трата,
                                                                                 я уже знаю, что следующее значение будет
                                                                                 доходом и наоборот.*/
             int a = 0;
-            if (fileManager.yearStorage.get(2021).get(i).isExpense) {
-                a = fileManager.yearStorage.get(2021).get(i + 1).amount -fileManager.yearStorage.get(2021).get(i).amount;
+            if (getYearStorage().get(2021).get(i).isExpense) {
+                a = getYearStorage().get(2021).get(i + 1).amount - getYearStorage().get(2021).get(i).amount;
                 yearList.add(a);
             } else {
-                a = fileManager.yearStorage.get(2021).get(i).amount - fileManager.yearStorage.get(2021).get(i + 1).amount;
+                a = getYearStorage().get(2021).get(i).amount - getYearStorage().get(2021).get(i + 1).amount;
                 yearList.add(a);
             }
         }
@@ -126,10 +136,10 @@ public class ReportManager {
     public ArrayList<Integer> getMonthStats(){   /* Метод возвращает список сумм расходов и доходов по каждому месяцу
                                                     для месячных отчетов. */
         ArrayList<Integer> monthList = new ArrayList<>();
-        for (Integer monthNum: fileManager.monthStorage.keySet()){
+        for (Integer monthNum: getMonthStorage().keySet()){
             int consAndIncome = 0;
-            for (int i = 0; i < fileManager.monthStorage.get(monthNum).size(); i++){
-                if(fileManager.monthStorage.get(monthNum).get(i).isExpense){
+            for (int i = 0; i < getMonthStorage().get(monthNum).size(); i++){
+                if(getMonthStorage().get(monthNum).get(i).isExpense){
                     consAndIncome += -sumCalculator(monthNum, i);
                 } else consAndIncome += sumCalculator(monthNum, i);
             }
@@ -141,8 +151,6 @@ public class ReportManager {
     public boolean compareYearAndMonthStats(){ /* Метод возвращает результат сравнения двух списков:
                                                   Списка доходов и расходов из метода getYearStats()
                                                   и писка доходов и расходов из метода getMonthStats()*/
-        getMonthStats();
-        getYearStats();
         boolean result = true;
         for (int i = 0; i < getYearStats().size(); i++){
             if (getYearStats().get(i).equals(getMonthStats().get(i))){

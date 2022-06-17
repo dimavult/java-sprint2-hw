@@ -4,7 +4,7 @@ public class ParseMonthFileData {
     int quantity;
     int sumOfOne;
 
-        public ParseMonthFileData(String[] lines) {
+    public ParseMonthFileData(String[] lines) {
         this.name = lines[0];
         this.isExpense = Boolean.parseBoolean(lines[1]);
         this.quantity = Integer.parseInt(lines[2]);
