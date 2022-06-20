@@ -1,77 +1,95 @@
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class YearlyReport {
-    private static final String PATH = "resources\\y.2021.csv";
-    private HashMap<Integer, ArrayList<ParseYearFileData>> yearStorage = new HashMap<>();
 
-    FileManager fileManager = new FileManager();
+    private HashMap<Integer, ArrayList<ParseYearFileData>> yearlyReports = new HashMap<>();
 
-    public static class ParseYearFileData {
-        int month;
-        boolean isExpense;
-        int amount;
+    public HashMap<Integer, ArrayList<ParseYearFileData>> getYearlyReports() {
+        return yearlyReports;
+    }
 
-        public ParseYearFileData(String[] lineContents) {
-            this.month = Integer.parseInt(lineContents[0]);
-            this.isExpense = Boolean.parseBoolean(lineContents[2]);
-            this.amount = Integer.parseInt(lineContents[1]);
+    private final String PATH = "resources\\y.2021.csv";
+
+    public void saveYearReport() {
+        Path checkExists = Paths.get(PATH);
+        if (Files.exists(checkExists)) {
+            File file = new File(PATH);
+            String record = FileReader.readFileContentsOrNull(PATH);
+            if (record != null) {
+                String[] lines = record.split("\n");
+                for (int i = 1; i < lines.length; i += 2) { /* Оформил этот метод имеено так, потому что иначе не получалось
+                                                               привязать к одному ключу две строки из файла.*/
+                    String[] linesContent = lines[i].split(","); // Первый массив строк для месяца из годового отчета
+                    String[] linesContent2 = lines[i + 1].split(",");// второй массив строк для месяца из годового отчета
+                    int month = Integer.parseInt(linesContent[0]);// Вытягиваю номер месяца, чтобы присвоить его как ключ в мапу
+                    ArrayList<ParseYearFileData> list = new ArrayList<>();// Создал список для хранения инфы за месяц
+                    ParseYearFileData parseYearFileData = new ParseYearFileData(linesContent);
+                    ParseYearFileData parseYearFileData1 = new ParseYearFileData(linesContent2);
+                    list.add(parseYearFileData);
+                    list.add(parseYearFileData1);
+                    yearlyReports.put(month, list);
+                }
+            }
+            System.out.println("Файл y.2021.csv считан.");
         }
     }
 
-    public void saveYearlyReport() {
-        ArrayList<ParseYearFileData> storageList = new ArrayList<>();
-        String file = "";
-        File searchedPath = new File(PATH);
-        String report = fileManager.readFileContentsOrNull(searchedPath.getAbsolutePath());
-        if (report != null) {
-            String[] line = report.split("\n");
-            for (int i = 1; i < line.length; i++) {
-                String[] lineContents = line[i].split(",");
-                storageList.add(new ParseYearFileData(lineContents));
-                yearStorage.put(2021, storageList);
+    public int getIncome(int month) {
+        int income = 0;
+        for (int i = 0; i < yearlyReports.get(month).size(); i++) {
+            if (!yearlyReports.get(month).get(i).isExpense()) {
+                income = yearlyReports.get(month).get(i).getAmount();
             }
         }
+        return income;
     }
 
-    public ArrayList<Integer> findYearlyIncome() {
-        ArrayList<Integer> incomeList = new ArrayList<>();
-        for (int i = 0; i < yearStorage.get(2021).size(); i++) {
-            if (!yearStorage.get(2021).get(i).isExpense) {
-                incomeList.add(yearStorage.get(2021).get(i).amount);
+    public int getExpense(int month) {
+        int expense = 0;
+        for (int i = 0; i < yearlyReports.get(month).size(); i++) {
+            if (yearlyReports.get(month).get(i).isExpense()) {
+                expense = yearlyReports.get(month).get(i).getAmount();
             }
         }
-        return incomeList;
+        return expense;
     }
 
-    public ArrayList<Integer> findYearlyConsumption() {
-        ArrayList<Integer> consumptionList = new ArrayList<>();
-        for (int i = 0; i < yearStorage.get(2021).size(); i++) {
-            if (yearStorage.get(2021).get(i).isExpense) {
-                consumptionList.add(yearStorage.get(2021).get(i).amount);
-            }
-        }
-        return consumptionList;
+    public int getProfitEachMonth(int month) {
+        return getIncome(month) - getExpense(month);
     }
 
-    public ArrayList<Integer> findEachMonthProfit(){
-        ArrayList<Integer> eachMonthProfit = new ArrayList<>();
-        for(int i = 0; i < findYearlyIncome().size(); i++){
-            eachMonthProfit.add(findYearlyIncome().get(i) - findYearlyConsumption().get(i));
-        }
-        return eachMonthProfit;
-    }
-
-    public void findAverageIncomeAndConsumption(int year) {
+    public int getAverageIncome() {
         int avgIncome = 0;
-        int avgConsumption = 0;
-        for (int i = 0; i < yearStorage.get(year).size(); i++) {
-            if (yearStorage.get(year).get(i).isExpense) {
-                avgConsumption += yearStorage.get(year).get(i).amount / (yearStorage.get(year).size() / 2);
-            } else avgIncome += yearStorage.get(year).get(i).amount / (yearStorage.get(year).size() / 2);
+        for (Integer month : yearlyReports.keySet()) {
+            avgIncome += getIncome(month) / yearlyReports.size();
         }
-        System.out.println("Средний расход за все месяцы в году: " + avgConsumption);
-        System.out.println("Средний доход за все месяцы в году: " + avgIncome);
+        return avgIncome;
+    }
+
+    public int getAverageExpense() {
+        int avgExpense = 0;
+        for (Integer month : yearlyReports.keySet()) {
+            avgExpense += getExpense(month) / yearlyReports.size();
+        }
+        return avgExpense;
+    }
+
+    public void showYearInfo() {
+        if (!yearlyReports.isEmpty()) {
+            System.out.println("Статистика за 2021 год.");
+            for (Integer month : yearlyReports.keySet()) {
+                System.out.println("Прибыль за " + MonthlyReport.MONTHS[month - 1] + " " + getProfitEachMonth(month));
+            }
+            System.out.println("Средний расход за год: " + getAverageExpense());
+            System.out.println("Средний доход за год: " + getAverageIncome());
+        }else {
+            System.out.println("Сперва считайте отчет.");
+        }
     }
 }
+
