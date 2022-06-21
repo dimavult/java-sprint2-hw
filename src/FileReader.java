@@ -3,7 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileReader {
-    public static String readFileContentsOrNull(String path)
+    public static String readFileContentsOrNull(String path) // Теперь статический
     {
         try {
             return Files.readString(Path.of(path));

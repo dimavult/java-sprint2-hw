@@ -35,25 +35,12 @@ public class MonthlyReport {
             }
             String filePath = "resources\\" + fileName;
             Path checkExist = Paths.get(filePath);
-            if(Files.exists(checkExist)){
+            if(Files.exists(checkExist)){ // Добавил проверку файла на существование
                 MonthlyService monthlyRecord = new MonthlyService();
                 monthlyRecord.saveMonthlyRecords(filePath);
-                monthlyReports.put(i, monthlyRecord);
+                monthlyReports.put(i, monthlyRecord);// Вынес из цикла
                 System.out.println("Файл " + fileName + " считан.");
             }
-        }
-    }
-
-    public void showMonthlyInfo(){
-        if (!monthlyReports.isEmpty()) {
-            for (Integer i : monthlyReports.keySet()) {
-                System.out.println(MONTHS[i - 1]);
-                monthlyReports.get(i).getMostProfitableProductForTheCurrentMonth();
-                monthlyReports.get(i).getTheBiggestExpenseCurrentMonth();
-                System.out.println();
-            }
-        }else {
-            System.out.println("Сперва считайте отчеты.");
         }
     }
 

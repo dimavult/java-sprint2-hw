@@ -8,9 +8,9 @@ public class MonthlyService {
     public void saveMonthlyRecords(String path) {
         monthlyRecords = new ArrayList<>();
         File file = new File(path);
-        String record = FileReader.readFileContentsOrNull(path);
+        String record = FileReader.readFileContentsOrNull(file.getAbsolutePath());
         if (record != null) {
-            String[] line = record.split(System.lineSeparator());
+            String[] line = record.split(System.lineSeparator()); //все так же разные служебные символы в файлах.
             for (int i = 1; i < line.length; i++) {
                 String[] lineContent = line[i].split(",");
                 monthlyRecords.add(new ParseMonthFileData(lineContent));

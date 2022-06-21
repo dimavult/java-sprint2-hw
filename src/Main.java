@@ -15,8 +15,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ReportManager reportManager = new ReportManager();
-        YearlyReport yearlyReport = new YearlyReport();
-        MonthlyReport monthlyReport = new MonthlyReport();
 
         while (true) {
             printMenu();
@@ -27,23 +25,22 @@ public class Main {
                     reportManager.monthlyReport.saveMonthlyReports();/* Оформил именно так, потому что иначе у меня
                                                                         при сравнении, запрошенные у классов
                                                                         MonthlyReport и YearlyReport данные терялись,
-                                                                        оставаясь лишь в этих классах.
-                                                                        Я еще плохо могу в инкапсуляцию >.< */
+                                                                        оставаясь лишь в этих классах. */
                     break;
                 case (2):
                     reportManager.yearlyReport.saveYearReport();
                     break;
                 case (3):
-                    reportManager.compareReports();
+                    reportManager.showCompareResult();
                     break;
                 case (4):
-                    reportManager.monthlyReport.showMonthlyInfo();
+                    reportManager.showMonthlyInfo();
                     break;
                 case (5):
-                    reportManager.yearlyReport.showYearInfo();
+                    reportManager.showYearInfo();
                     break;
                 case (0):
-                    scanner.close();
+                    scanner.close();// Закрыл сканнер
                     return;
                 default:
                     System.out.println("Такой команды не существует.");
